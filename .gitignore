@@ -1,0 +1,8 @@
+node_modules
+Icon*
+.DS_Store
+*.log
+*.logs
+.vscode
+.eslintrc.json
+coverage
