@@ -4,7 +4,17 @@ const sinon = require('sinon');
 
 const log = rewire('../log');
 
-function compareLogMsg(sent, expected) {
+class debugMsg {
+  constructor(object) {
+    this.logMsg = object.logMsg; // Message to log.
+    this.method = object.method; // Access method.
+    this.url = object.url; // Accessed URL.
+    this.ip = object.ip; // Access by IP.
+    this.level = object.level; // Message level.
+  }
+}
+
+function compareLogMsg(sent, expected, format) {
   const logStrings = [];
 
   sent.forEach((args) => {
@@ -12,9 +22,22 @@ function compareLogMsg(sent, expected) {
   });
 
   Object.keys(expected).forEach((key, index) => {
-    const msg = `${expected[key].ip}\t${expected[key].method}\t${expected[key].url}\t\t${expected[key].level}\t${expected[key].logMsg}\n`;
+    console.log(key);
+    const expectedMsg = new debugMsg(expected[key]);
+
+    Object.keys(expectedMsg).forEach((k) => {
+      console.log(k);
+      if (expectedMsg[k] === undefined) {
+        expectedMsg[k] = '';
+      }
+    });
+
+    const msg = format(expectedMsg);
 
     const resultMsg = logStrings[index];
+
+    // console.log(resultMsg);
+    // console.log(msg);
 
     expect(msg).to.equal(resultMsg);
   });
@@ -78,7 +101,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expect);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(3);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -98,7 +121,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expect);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(3);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -118,7 +141,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expect);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(2);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -156,7 +179,7 @@ describe('Debug Logging Utility', () => {
           level: 'ERROR',
         });
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expect);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(1);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -167,14 +190,20 @@ describe('Debug Logging Utility', () => {
   describe('Testing Empty Field Handling', () => {
     it('Replace undefined with spaces.', () => {
       const t = this;
+      const logMsg = {
+        emptyField: {
+          logMsg: 'Testing undefined fields.',
+          level: 'INFO',
+        },
+      };
 
-      log.debug({
-        logMsg: 'Testing undefined fields.',
-        level: 'INFO',
-      });
+      log.debug(logMsg.emptyField);
+
+      compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
       expect(t.console.log.callCount).to.equal(1);
       expect(t.fs.stat.callCount).to.equal(1);
+      expect(t.fs.appendFile.callCount).to.equal(1);
     });
   });
 });
