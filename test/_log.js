@@ -62,28 +62,28 @@ describe('Debug Logging Utility', () => {
     this.fs.stat.reset();
     this.fs.appendFile.reset();
   });
-  describe('Testing Each Log Level', () => {
+  describe('TESTING LOG LEVELS', () => {
     describe('Log Level Set to true.', () => {
       beforeEach(() => {
         this.logLvlMessages = {
           info: {
             logMsg: 'Sent an INFO log message to the console.',
             method: 'METHOD',
-            url: 'URL',
+            url: 'http://www.url.com',
             ip: 'IP ADDRESS',
             level: 'INFO',
           },
           debug: {
             logMsg: 'Sent a DEBUG log message to the console.',
             method: 'METHOD',
-            url: 'URL',
+            url: 'http://www.url.com',
             ip: 'IP ADDRESS',
             level: 'DEBUG',
           },
           error: {
             logMsg: 'Sent a ERROR log message to the console.',
-            method: 'METHOD',
-            url: 'URL',
+
+            url: 'http://www.url.com',
             ip: 'IP ADDRESS',
             level: 'ERROR',
           },
@@ -99,7 +99,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(3);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -119,7 +119,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(3);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -139,7 +139,7 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(2);
         expect(t.fs.stat.callCount).to.equal(3);
@@ -159,28 +159,94 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+        compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
 
         expect(t.console.log.callCount).to.equal(1);
         expect(t.fs.stat.callCount).to.equal(3);
         expect(t.fs.appendFile.callCount).to.equal(3);
       });
     });
+    describe('Log Level Set to Invalid Option.', () => {
+      beforeEach(() => {
+        log.__set__('process.env.DEBUG', 'invalid');
+      });
+      it('Log Invalid Debug Level to Console.', () => {
+        const t = this;
+
+        log.debug(t.logLvlMessages.info);
+
+        log.debug(t.logLvlMessages.debug);
+
+        log.debug(t.logLvlMessages.error);
+
+        // compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(3);
+        expect(t.fs.stat.callCount).to.equal(3);
+        expect(t.fs.appendFile.callCount).to.equal(3);
+
+        t.console.log.args.forEach((args) => {
+          expect(args[0].substring(args[0].indexOf('\t') + 1)).to.equal('The debug level invalid is incorrect. Please choose true, error, debug or info.');
+        });
+      });
+    });
   });
-  describe('Testing Different Formats', () => {
+  describe('TESTING FORMATS', () => {
     describe('Testing Empty Field Handling', () => {
       it('Replace undefined with spaces.', () => {
         const t = this;
         const logMsg = {
           emptyField: {
             logMsg: 'Sent a ERROR log message to the console.',
-            url: 'URL',
+            url: 'http://www.url.com',
             ip: 'IP ADDRESS',
             level: 'ERROR',
           },
         };
 
         log.debug(logMsg.emptyField);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+    describe('Testing empty url with short ip.', () => {
+      it('Formatted for empty url and short ip.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'SHORT',
+            level: 'ERROR',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+    describe('Testing empty url with regular ip.', () => {
+      it('Formatted for empty url and regular ip.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP ADDRESS',
+            level: 'ERROR',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
 
         compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
@@ -189,7 +255,111 @@ describe('Debug Logging Utility', () => {
         expect(t.fs.appendFile.callCount).to.equal(1);
       });
     });
+    describe('Testing short url with short ip.', () => {
+      it('Formatted for short url and short ip.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP',
+            url: 'URL',
+            level: 'ERROR',
+          },
+        };
 
+        log.debug(logMsg.emptyURLShortIP);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+    describe('Testing short url with regular ip.', () => {
+      it('Formatted for short url and regular ip.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP ADDRESS',
+            url: 'URL',
+            level: 'ERROR',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+    describe('Testing regular url with short ip.', () => {
+      it('Formatted for regular url and short ip.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP',
+            url: 'http://www.url.com',
+            level: 'ERROR',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+    describe('Testing no chalk formatting.', () => {
+      it('Formatted for no level.', () => {
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP ADDRESS',
+            url: 'http://www.url.com',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
+
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
+
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
+    });
+  });
+  describe('TESTING LOG FILE', () => {
+    describe('No log file exists', () => {
+      it('There is no log file.', () => {
+        console.log(log.__get__('errorLog'));
+        const t = this;
+        const logMsg = {
+          emptyURLShortIP: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            method: 'METHOD',
+            ip: 'IP ADDRESS',
+            url: 'http://www.url.com',
+          },
+        };
+
+        log.debug(logMsg.emptyURLShortIP);
+      });
+    });
   });
 });
 
