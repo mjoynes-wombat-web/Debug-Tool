@@ -36,7 +36,7 @@ module.exports.debug = (info) => { // Export to Express.
     }
   });
 
-  const errorLog = 'logs/error.log'; // Error log location.
+  const errorLog = './logs/error.log'; // Error log location.
   let debugLogMsg; // Variable to hold the formatted error log message.
 
   if (msg.url === '') { // If the URL is empty.
@@ -60,19 +60,24 @@ module.exports.debug = (info) => { // Export to Express.
 
   // Check to see if there is an error when checking the status of the error log.
   fs.stat(errorLog, (err) => {
-    if (err.code === 'ENOENT') { // Otherwise if the error is a non existent file, write the headers and the message to the log.
-      fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
-        if (writeErr) throw writeErr;
-      });
+    console.log(err);
+    if (err) {
+      if (err.code === 'ENOENT') { // Otherwise if the error is a non existent file, write the headers to the log.
+        fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
+          if (writeErr) throw writeErr;
+        });
+      }
     }
   });
 
-  fs.appendFile(errorLog, `${debugLogMsg}\n`, (writeErr) => {
+  // Write the message to the log.
+  fs.appendFile(errorLog, `${debugLogMsg}\n`, (writeErr) => { // Throw an error if there is a write error.
     if (writeErr) throw writeErr;
   });
 
-  if (process.env.DEBUG) {
-    const debugConsoleMsg = (t, m) => {
+  if (process.env.DEBUG) { // If there  DEBUG is in the env variables.
+    //
+    const styleConsoleMsg = (t, m) => {
       const consoleMsg = m;
       consoleMsg.ip = chalk.cyan(consoleMsg.ip);
       if (consoleMsg.method !== '') {
@@ -100,7 +105,7 @@ module.exports.debug = (info) => { // Export to Express.
       return consoleMsg;
     };
 
-    const consoleMsg = debugConsoleMsg(time, msg);
+    const consoleMsg = styleConsoleMsg(time, msg);
     const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`;
 
     switch (process.env.DEBUG) {
