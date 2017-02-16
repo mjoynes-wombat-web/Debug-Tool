@@ -22,11 +22,9 @@ function compareLogMsg(sent, expected, format) {
   });
 
   Object.keys(expected).forEach((key, index) => {
-    console.log(key);
     const expectedMsg = new debugMsg(expected[key]);
 
     Object.keys(expectedMsg).forEach((k) => {
-      console.log(k);
       if (expectedMsg[k] === undefined) {
         expectedMsg[k] = '';
       }
@@ -155,29 +153,11 @@ describe('Debug Logging Utility', () => {
       it('Log Only ERROR level messages to Console.', () => {
         const t = this;
 
-        log.debug({
-          logMsg: 'Sent an INFO log message to the console.',
-          method: 'METHOD',
-          url: 'URL',
-          ip: 'IP ADDRESS',
-          level: 'INFO',
-        });
+        log.debug(t.logLvlMessages.info);
 
-        log.debug({
-          logMsg: 'Sent a DEBUG log message to the console.',
-          method: 'METHOD',
-          url: 'URL',
-          ip: 'IP ADDRESS',
-          level: 'DEBUG',
-        });
+        log.debug(t.logLvlMessages.debug);
 
-        log.debug({
-          logMsg: 'Sent a ERROR log message to the console.',
-          method: 'METHOD',
-          url: 'URL',
-          ip: 'IP ADDRESS',
-          level: 'ERROR',
-        });
+        log.debug(t.logLvlMessages.error);
 
         compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
@@ -187,24 +167,29 @@ describe('Debug Logging Utility', () => {
       });
     });
   });
-  describe('Testing Empty Field Handling', () => {
-    it('Replace undefined with spaces.', () => {
-      const t = this;
-      const logMsg = {
-        emptyField: {
-          logMsg: 'Testing undefined fields.',
-          level: 'INFO',
-        },
-      };
+  describe('Testing Different Formats', () => {
+    describe('Testing Empty Field Handling', () => {
+      it('Replace undefined with spaces.', () => {
+        const t = this;
+        const logMsg = {
+          emptyField: {
+            logMsg: 'Sent a ERROR log message to the console.',
+            url: 'URL',
+            ip: 'IP ADDRESS',
+            level: 'ERROR',
+          },
+        };
 
-      log.debug(logMsg.emptyField);
+        log.debug(logMsg.emptyField);
 
-      compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
+        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t\t${expected.level}\t${expected.logMsg}\n`);
 
-      expect(t.console.log.callCount).to.equal(1);
-      expect(t.fs.stat.callCount).to.equal(1);
-      expect(t.fs.appendFile.callCount).to.equal(1);
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.fs.stat.callCount).to.equal(1);
+        expect(t.fs.appendFile.callCount).to.equal(1);
+      });
     });
+
   });
 });
 
