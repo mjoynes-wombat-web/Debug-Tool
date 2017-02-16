@@ -4,6 +4,7 @@ This debug logger is for node and express. It formats the log file and console o
 <br>
 # Installation
 Install by running `npm install debug-tool-express --save-dev`. You will then need to require it into your project.
+You will also need to add a `logs` folder to your root directory.
 
 ### Dependencies
 ```
