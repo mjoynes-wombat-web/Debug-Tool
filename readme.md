@@ -36,8 +36,6 @@ true | Outputs all debug messages.
 debug | Outputs all debug messages.
 info | Outputs the info, and error debug messages.
 error | Outputs the error debug messages.
-<br>
-<br>
 
 ##Unit Testing
 To unit test the debugger run `mocha` in the packages main directory.
