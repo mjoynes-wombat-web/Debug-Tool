@@ -179,8 +179,6 @@ describe('Debug Logging Utility', () => {
 
         log.debug(t.logLvlMessages.error);
 
-        // compareLogMsg(t.fs.appendFile.args, this.logLvlMessages, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-
         expect(t.console.log.callCount).to.equal(3);
         expect(t.fs.stat.callCount).to.equal(3);
         expect(t.fs.appendFile.callCount).to.equal(3);
