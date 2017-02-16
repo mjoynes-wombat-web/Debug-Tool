@@ -343,23 +343,5 @@ describe('Debug Logging Utility', () => {
       });
     });
   });
-  describe('TESTING LOG FILE', () => {
-    describe('No log file exists', () => {
-      it('There is no log file.', () => {
-        console.log(log.__get__('errorLog'));
-        const t = this;
-        const logMsg = {
-          emptyURLShortIP: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            method: 'METHOD',
-            ip: 'IP ADDRESS',
-            url: 'http://www.url.com',
-          },
-        };
-
-        log.debug(logMsg.emptyURLShortIP);
-      });
-    });
-  });
 });
 
