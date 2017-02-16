@@ -1,43 +1,34 @@
-# URL Shortener - Version 1.5
-This URL shortener creates a unique shortened URL based on a randomly generated string from Math.random();
+# Node and Express Debug Logger - Version 1
+This debug logger is for node and express. It formats the log file and console output for easy readability. 
 <br>
 <br>
 # Installation
-## Node Setup
-Use `npm install` in the main directory to install the project and its dependencies.
+Install by running `npm install debug-tool-express --save-dev`. You will then need to require it into your project.
 
 ### Dependencies
 ```
-"body-parser": "^1.15.2",
-"dotenv": "^4.0.0",
-"express": "^4.14.0",
-"mysql": "^2.11.1",
-"sequelize": "^3.24.3"
+"chalk": "^1.1.3",
+"dotenv": "^4.0.0"
 ```
 
-## Database Access Environment Variables
-This application uses Sequelize for database access and dotenv for the database environment variables. The template.env file is a template for your environment variables. Enter your database access information into that file and save it as .env.
+#Using The Debugger
 
-### .ENV File Example
+## Adding Debug Messages.
+To add a debug message to your code pass the `.debug` method an object. The following values can be defined but all are optional. This will added them to the `error.log` file in this modules `logs` folder.
+
 ```
-DB_NAME=*Your Database Name*
-DB_USER=*Your User Name*
-DB_PASS=*Your Password*
-DB_HOST=*Your Database Host Address*
-DB_SCHEMA=*Your Database Schema Type i.e. mysql*
-DB_PORT=*Your Database Port*
-```
-<br>
-<br>
+{
+  logMsg = ''
+  method = ''
+  url = ''
+  ip = ''
+  level = ''
+}
+  ```
+## Activating Console Messages.
+The debugging logger messages for this application have 3 levels. They are error, info, and debug. 
 
-# Usage
-## Starting Application
-To start the application normally run `node server.js`.
-
-## Debugging
-The debugging logger messages for this application have 3 levels. They are error, info, and debug. Messages are output to `./log/error.log`.
-
-To start the application with console debugging run `DEBUG=opt server.js` where you replace `opt` with one of the options below. This will output specific messages to the console.
+Set the `DEBUG=opt` to one of the `opt` below. This will output specific level messages to the console.
 
 Debug Option | Debug Message Outputs
 ---------------------|------------------------------------
@@ -49,164 +40,7 @@ error | Outputs the error debug messages.
 <br>
 
 ##Unit Testing
-To unit test the various portions of the applications your can run the following functions while in the root directory. Due to rewire overlap all tests cannot be run at once.
-
-Command | Modules Tested
-----------------|-------------------------
-`mocha test/_log.js` | Tests the debug logging functionality.
-`mocha test/_models.js` | Tests the models functionality.
-`mocha test/_routes.js` | Tests the routes functionality.
-
-# GO Route
-## Accessing a shortened URL.
-#### [`http://localhost:3000/go/:shortenedURL`]
-
-### Summary
-By replacing `:shortenedURL` with one of the shortened URLs you will be redirected to the full URL that's stored in the database.
-<br>
-<br>
-<br>
-# API Access
-
-## Creating a short URL.
-#### [`POST http://localhost:3000/api/v1/urls`]
-
-### Summary
-By passing a URL to this address you will create a shortened URL. If the URL already exists it will return that URLs information.
-
-### Parameters
-  Name  |  Located In  |  Description
---------|--------------|-------------
-   URL  |     body     |  Pass in a URL to be shortened.
-
-### Sample Response
-```
-{
-  "status": {
-    "code": 201
-  },
-  "urls": [
-    {
-      "id": 59,
-      "URL": "http://www.warframe.com",
-      "shortURL": "l05hmgxdn",
-      "createdAt": "2017-02-05T00:32:56.000Z",
-      "updatedAt": "2017-02-05T00:32:56.000Z"
-    }
-  ]
-}
-```
-<br>
-<br>
-## Accessing All URLs.
-#### [`GET http://localhost:3000/api/v1/urls`]
-
-### Summary
-Accessing this endpoint will return all of the shortened URLs.
-
-### Sample Response
-```
-{
-  "status": {
-    "code": 200
-  },
-  "urls": [
-    {
-      "id": 11,
-      "URL": "http://www.google.com/",
-      "shortURL": "ui05f",
-      "createdAt": "2017-02-04T18:14:52.000Z",
-      "updatedAt": "2017-02-04T18:14:52.000Z"
-    },
-    {
-      "id": 12,
-      "URL": "http://www.amazon.com",
-      "shortURL": "idtrl21k1",
-      "createdAt": "2017-02-04T18:14:58.000Z",
-      "updatedAt": "2017-02-04T18:14:58.000Z"
-    }
-  ]
-}
-```
-<br>
-<br>
-## Accessing URL by ID.
-##### [`GET http://localhost:3000/api/v1/urls/:id`]
-
-### Summary
-By replacing `:id` in the GET URL you can retrieve a URL by its ID.
-
-### Sample Response
-```
-{
-  "status": {
-    "code": 200
-  },
-  "urls": [
-    {
-      "id": 11,
-      "URL": "http://www.google.com/",
-      "shortURL": "ui05f",
-      "createdAt": "2017-02-04T18:14:52.000Z",
-      "updatedAt": "2017-02-04T18:14:52.000Z"
-    }
-  ]
-}
-```
-<br>
-<br>
-## Updating URL by ID.
-##### [`POST http://localhost:3000/api/v1/urls/:id`]
-
-### Summary
-By replacing `:id` in the POST URL you can pass a URL to this address and update the URL with that ID.
-
-### Parameters
-  Name  |  Located In  |  Description
---------|--------------|-------------
-   URL  |     body     |  Pass in a URL to be shortened.
-
-### Sample Response
-```
-{
-  "status": {
-    "code": 200
-  },
-  "urls": [
-    {
-      "id": 11,
-      "URL": "https://docs.google.com/",
-      "shortURL": "ui05f",
-      "createdAt": "2017-02-04T18:14:52.000Z",
-      "updatedAt": "2017-02-05T00:42:02.000Z"
-    }
-  ]
-}
-```
-<br>
-<br>
-## Deleting URL by ID.
-##### [`DELETE http://localhost:3000/api/v1/urls/:id`]
-
-### Summary
-By replacing `:id` in the DELETE URL you can delete the URL with that ID.
-
-### Sample Response
-```
-{
-  "status": {
-    "code": 200
-  },
-  "urls": [
-    {
-      "id": "59",
-      "deleted": true
-    }
-  ]
-}
-```
-<br>
-<br>
+To unit test the debugger run `mocha` in the packages main directory.
 
 # Code Styling
 ## AirBnb JavaScript
