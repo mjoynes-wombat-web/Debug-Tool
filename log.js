@@ -60,9 +60,8 @@ module.exports.debug = (info) => { // Export to Express.
 
   // Check to see if there is an error when checking the status of the error log.
   fs.stat(errorLog, (err) => {
-    console.log(err);
-    if (err) {
-      if (err.code === 'ENOENT') { // Otherwise if the error is a non existent file, write the headers to the log.
+    if (err) { // If there is an error
+      if (err.code === 'ENOENT') { // If the error is a non existent file, write the headers to the log.
         fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
           if (writeErr) throw writeErr;
         });
@@ -76,25 +75,25 @@ module.exports.debug = (info) => { // Export to Express.
   });
 
   if (process.env.DEBUG) { // If there  DEBUG is in the env variables.
-    //
+    // Style Console Message Function.
     const styleConsoleMsg = (t, m) => {
       const consoleMsg = m;
-      consoleMsg.ip = chalk.cyan(consoleMsg.ip);
-      if (consoleMsg.method !== '') {
+      consoleMsg.ip = chalk.cyan(consoleMsg.ip); // Make the IP cyan.
+      if (consoleMsg.method !== '') { // If the method is not blank style it and the url.
         consoleMsg.method = chalk.bold.bgGreen.black(` ${consoleMsg.method} `);
         consoleMsg.url = chalk.underline.blue.bgWhite(` ${consoleMsg.url} `);
-      } else {
+      } else { // Otherwise just style the url.
         consoleMsg.url = chalk.underline.blue(consoleMsg.url);
       }
 
-      switch (consoleMsg.level) {
+      switch (consoleMsg.level) { // Check the level and style it accordingly.
         case 'INFO':
           consoleMsg.level = chalk.green(` ${consoleMsg.level} `);
           break;
         case 'DEBUG':
           consoleMsg.level = chalk.yellow(` ${consoleMsg.level} `);
           break;
-        case 'ERROR':
+        case 'ERROR': // If it is an error also style the message.
           consoleMsg.level = chalk.black.bgRed(` ${consoleMsg.level} `);
           consoleMsg.logMsg = chalk.red(consoleMsg.logMsg);
           break;
@@ -105,25 +104,25 @@ module.exports.debug = (info) => { // Export to Express.
       return consoleMsg;
     };
 
-    const consoleMsg = styleConsoleMsg(time, msg);
-    const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`;
+    const consoleMsg = styleConsoleMsg(time, msg); // Pass in the time and message to be styled.
+    const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`; // Format the spacing for the message.
 
-    switch (process.env.DEBUG) {
+    switch (process.env.DEBUG) { // Check the debug environment variable.
       case 'debug':
-      case 'true':
+      case 'true': // If it is true or debug the output all messages to the console.
         console.log(consoleOutput);
         break;
-      case 'error':
+      case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
           console.log(consoleOutput);
         }
         break;
-      case 'info':
+      case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
           console.log(consoleOutput);
         }
         break;
-      default:
+      default: // If the level is not set to one of the values above then output the incorrect value message.
         console.log(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
         break;
     }
