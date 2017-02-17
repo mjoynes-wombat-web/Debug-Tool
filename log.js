@@ -64,14 +64,19 @@ module.exports.debug = (info) => { // Export to Express.
       if (err.code === 'ENOENT') { // If the error is a non existent file, write the headers to the log.
         fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
           if (writeErr) throw writeErr;
+          else return true;
         });
+        return true;
       }
+      return err.code;
     }
+    return false;
   });
 
   // Write the message to the log.
   fs.appendFile(errorLog, `${debugLogMsg}\n`, (writeErr) => { // Throw an error if there is a write error.
     if (writeErr) throw writeErr;
+    return true;
   });
 
   if (process.env.DEBUG) { // If there  DEBUG is in the env variables.
@@ -122,7 +127,9 @@ module.exports.debug = (info) => { // Export to Express.
           console.log(consoleOutput);
         }
         break;
-      default: // If the level is not set to one of the values above then output the incorrect value message.
+      default:
+        // If the level is not set to one of the values above then output the incorrect value
+        // message.
         console.log(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
         break;
     }
