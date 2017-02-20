@@ -1,3 +1,9 @@
+/**
+ * Daniel Cobb
+ * 2-20-17
+ * Version Updater
+ */
+
 const fs = require('fs');
 
 class versionUpdate {
@@ -68,6 +74,5 @@ class versionUpdate {
     return status;
   }
 }
-const test = new versionUpdate();
-console.log(test.updateAuto('test'));
-exports.versionUpdate = new versionUpdate();
+
+exports.update = new versionUpdate();
