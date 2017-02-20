@@ -537,6 +537,6 @@ describe('Testing manual update', () => {
 describe('Testing Auto update', () => {
   it('Should return a string', () => {
     v.update.updateAuto('test');
-    expect('1.0.4');
+    expect('package.json updated');
   });
 });
