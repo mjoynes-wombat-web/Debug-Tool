@@ -8,7 +8,7 @@ class versionUpdate {
     this.newPackage = this.oldPackage;
     this.package = JSON.stringify(this.newPackage, null, 2);
     this.status = 'package.json updated.';
-    fs.writeFile('package2.json', this.package, (err) => {
+    fs.writeFile('package.json', this.package, (err) => {
       if (err) {
         this.status = err;
       }
@@ -69,5 +69,5 @@ class versionUpdate {
   }
 }
 const test = new versionUpdate();
-console.log(test.updateManual('1.0.0', 'test'));
+console.log(test.updateAuto('test'));
 exports.versionUpdate = new versionUpdate();
