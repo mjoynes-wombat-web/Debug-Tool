@@ -2,8 +2,7 @@
 const rewire = require('rewire');
 const expect = require('chai').expect;
 const sinon = require('sinon');
-// Pull in the debug log with rewire.
-const log = rewire('../log');
+
 // Setup a debug message class.
 class debugMsg {
   constructor(object) {
@@ -14,34 +13,7 @@ class debugMsg {
     this.level = object.level; // Message level.
   }
 }
-// Compare Log Message Function.
-// Accepts the sent messages, the expected messages and the format function.
-function compareLogMsg(sent, expected, format) {
-  const logStrings = [];  // An array to hold the log strings minus the time.
-  // For each log string pull out the substring without the time and add it to the log strings
-  // array.
-  sent.forEach((args) => {
-    logStrings.push(args[1].substring(args[1].indexOf('\t') + 1));
-  });
-  // For each messages that is expected.
-  Object.keys(expected).forEach((key, index) => {
-    // Create a new message object from the debug message class.
-    const expectedMsg = new debugMsg(expected[key]);
-    // For each key in the expected message.
-    Object.keys(expectedMsg).forEach((k) => {
-      // If it is undefined set it to an empty string.
-      if (expectedMsg[k] === undefined) {
-        expectedMsg[k] = '';
-      }
-    });
-    // Format the message with the format function provided.
-    const msg = format(expectedMsg);
-    // Pull in the results message based on the index we are on.
-    const resultMsg = logStrings[index];
-    // Expect the two messages to match.
-    expect(msg).to.equal(resultMsg);
-  });
-}
+
 // Debug Logging Utility Tests.
 describe('Debug Logging Utility', () => {
   // Before each test.
@@ -50,174 +22,10 @@ describe('Debug Logging Utility', () => {
     this.console = {
       log: sinon.spy(),
     };
-    // Set fs stat and appendFile to a sinon spy.
-    this.fs = {
-      stat: sinon.spy(),
-      appendFile: sinon.spy(),
-    };
-    // Set the following variables from log to the sinon spies above.
-    log.__set__('fs.stat', this.fs.stat);
-    log.__set__('fs.appendFile', this.fs.appendFile);
     log.__set__('console', this.console);
   });
   // Testing log file.
-  describe('TESTING LOG FILE', () => {
-    // Testing writing to log file.
-    describe('Testing Writing to Logs', () => {
-      // Writing Headers should be false if file exists.
-      it('Writing Header Should Return False If File Exists.', () => {
-        const t = this; // Variable to persist this.
-        // Object to hold test debug message.
-        const logMsg = {
-          test: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            url: 'http://www.url.com',
-            ip: 'IP ADDRESS',
-            level: 'ERROR',
-          },
-        };
-        // Run the debug log with an empty field.
-        log.debug(logMsg.test);
-        // Make sure it matches the proper formatting.
-        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-        // Expect fs.stat and fs.appendFile to be run once. Console.log shouldn't run.
-        expect(t.console.log.callCount).to.equal(0);
-        expect(t.fs.stat.callCount).to.equal(1);
-        expect(t.fs.appendFile.callCount).to.equal(1);
-        // Run the passed fs.stat function and set it's result to writeHeaders
-        const writeHeaders = t.fs.stat.args[0][1]();
-        // Write headers should be false.
-        expect(writeHeaders).to.equal(false);
-      });
-      // Writing the headers should return true if file doesn't exists.
-      it('Writing Header Should Return True If File Doesn\'t Exists.', () => {
-        const t = this; // Variable to persist this.
-        // Object to hold test debug message.
-        const logMsg = {
-          test: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            url: 'http://www.url.com',
-            ip: 'IP ADDRESS',
-            level: 'ERROR',
-          },
-        };
-        // Run the debug log with an empty field.
-        log.debug(logMsg.test);
-        // Make sure it matches the proper formatting.
-        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-        // Expect fs.stat and fs.appendFile to be run once. Console.log shouldn't run.
-        expect(t.console.log.callCount).to.equal(0);
-        expect(t.fs.stat.callCount).to.equal(1);
-        expect(t.fs.appendFile.callCount).to.equal(1);
-        // Setup error object for missing  file error.
-        const err = {
-          code: 'ENOENT',
-        };
-        // Run the function passed to fs.stat with the missing file error.
-        const writeHeaders = t.fs.stat.args[0][1](err);
-        // Expect write headers to be true.
-        expect(writeHeaders).to.equal(true);
-      });
-      // Writing headers should return error if it fails for another reason.
-      it('Writing Header Should Return Error Message if it Fails for another Reason.', () => {
-        const t = this; // Variable to persist this.
-        // Object to hold test debug message.
-        const logMsg = {
-          test: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            url: 'http://www.url.com',
-            ip: 'IP ADDRESS',
-            level: 'ERROR',
-          },
-        };
-        // Run the debug log with an empty field.
-        log.debug(logMsg.test);
-        // Make sure it matches the proper formatting.
-        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-        // Expect fs.stat and fs.appendFile to be run once. Console.log shouldn't run.
-        expect(t.console.log.callCount).to.equal(0);
-        expect(t.fs.stat.callCount).to.equal(1);
-        expect(t.fs.appendFile.callCount).to.equal(1);
-        // Setup error object for non-missing file error.
-        const err = {
-          code: 'test',
-        };
-        // Run the function passed to fs.stat with the non-missing file error.
-        const writeHeaders = t.fs.stat.args[0][1](err);
-        // Expect write headers to be the error code from above.
-        expect(writeHeaders).to.equal(err.code);
-      });
-    });
-    // Testing bad log file path.
-    describe('Testing Bad Log File Path', () => {
-      it('Writing To Log Files Should Error When there are Write Errors.', () => {
-        const t = this; // Variable to persist this.
-        // Object to hold test debug message.
-        const logMsg = {
-          test: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            url: 'http://www.url.com',
-            ip: 'IP ADDRESS',
-            level: 'ERROR',
-          },
-        };
-        // Run the debug log with an empty field.
-        log.debug(logMsg.test);
-        // Make sure it matches the proper formatting.
-        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-        // Expect fs.stat and fs.appendFile to be run once. Console.log shouldn't run.
-        expect(t.console.log.callCount).to.equal(0);
-        expect(t.fs.stat.callCount).to.equal(1);
-        expect(t.fs.appendFile.callCount).to.equal(1);
-        // Setup error object for missing file error.
-        const err = {
-          code: 'ENOENT',
-        };
-        // Expect the appendFile for adding in the log line to throw an error.
-        expect(() => t.fs.appendFile.firstCall.args[2]('write error')).to.throw('write error');
-        // Run function passed to stat with the error so we can test the function passed to it's
-        // appendFile.
-        t.fs.stat.args[0][1](err);
-        // Expect the appendFile for adding in the header line to throw an error.
-        expect(() => t.fs.appendFile.secondCall.args[2]('write error')).to.throw('write error');
-      });
-      // Testing Good writing to log file that doesn't exist.
-      it('Writing Log Files Should Not Error Without Write Errors.', () => {
-        const t = this; // Variable to persist this.
-        // Object to hold test debug message.
-        const logMsg = {
-          test: {
-            logMsg: 'Sent a ERROR log message to the console.',
-            url: 'http://www.url.com',
-            ip: 'IP ADDRESS',
-            level: 'ERROR',
-          },
-        };
-        // Run the debug log with an empty field.
-        log.debug(logMsg.test);
-        // Make sure it matches the proper formatting.
-        compareLogMsg(t.fs.appendFile.args, logMsg, expected => `${expected.ip}\t${expected.method}\t${expected.url}\t${expected.level}\t${expected.logMsg}\n`);
-        // Expect fs.stat and fs.appendFile to be run once. Console.log shouldn't run.
-        expect(t.console.log.callCount).to.equal(0);
-        expect(t.fs.stat.callCount).to.equal(1);
-        expect(t.fs.appendFile.callCount).to.equal(1);
-        // Setup error object for missing file error.
-        const err = {
-          code: 'ENOENT',
-        };
-         // Run function passed to stat with the error so we can test the function passed to it's
-        // appendFile.
-        t.fs.stat.args[0][1](err);
-        // Set the return of the appendFile for writing the header to headerWrite.
-        const headerWrite = t.fs.appendFile.secondCall.args[2]();
-        // Set the return of the appendFile for writing the log line to lineWrite.
-        const lineWrite = t.fs.appendFile.firstCall.args[2]();
-        // Expect both to return true.
-        expect(headerWrite).to.equal(true);
-        expect(lineWrite).to.equal(true);
-      });
-    });
-  });
+  describe('TESTING MSGS', () => {
   // Test Log Levels.
   describe('TESTING LOG LEVELS', () => {
     // Before Each Test/
@@ -527,4 +335,3 @@ describe('Debug Logging Utility', () => {
     });
   });
 });
-

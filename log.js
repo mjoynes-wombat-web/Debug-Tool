@@ -1,10 +1,5 @@
 require('dotenv').config(); // Require dotenv.
 
-const fs = {
-  stat: require('fs').stat,
-  appendFile: require('fs').appendFile,
-};
-
 const chalk = require('chalk'); // Require chalk.
 
 const time = new Date().toISOString(); // Get current date and time in ISO format.
@@ -34,49 +29,6 @@ module.exports.debug = (info) => { // Export to Express.
     if (msg[key] === undefined) { // If any of the keys are undefined, set them to empty strings.
       msg[key] = '';
     }
-  });
-
-  const errorLog = './logs/error.log'; // Error log location.
-  let debugLogMsg; // Variable to hold the formatted error log message.
-
-  if (msg.url === '') { // If the URL is empty.
-    if (msg.ip.length < 10) { // If the ip is less than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    } else { // Otherwise if the ip is longer than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    }
-  } else if (msg.url.length < 16) { // Otherwise if the URL is less than 16 characters.
-    if (msg.ip.length < 10) { // If the ip is less than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    } else { // Otherwise if the ip is longer than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    }
-    // Otherwise if the IP is less than 10 characters, format the message this way.
-  } else if (msg.ip.length < 10) {
-    debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t${msg.level}\t${msg.logMsg}`;
-  } else { // Otherwise format the message this way.
-    debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t${msg.level}\t${msg.logMsg}`;
-  }
-
-  // Check to see if there is an error when checking the status of the error log.
-  fs.stat(errorLog, (err) => {
-    if (err) { // If there is an error
-      if (err.code === 'ENOENT') { // If the error is a non existent file, write the headers to the log.
-        fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
-          if (writeErr) throw writeErr;
-          else return true;
-        });
-        return true;
-      }
-      return err.code;
-    }
-    return false;
-  });
-
-  // Write the message to the log.
-  fs.appendFile(errorLog, `${debugLogMsg}\n`, (writeErr) => { // Throw an error if there is a write error.
-    if (writeErr) throw writeErr;
-    return true;
   });
 
   if (process.env.DEBUG) { // If there  DEBUG is in the env variables.
@@ -119,12 +71,12 @@ module.exports.debug = (info) => { // Export to Express.
         break;
       case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
-          console.log(consoleOutput);
+          console.error(consoleOutput);
         }
         break;
       case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
-          console.log(consoleOutput);
+          console.warn(consoleOutput);
         }
         break;
       default:
