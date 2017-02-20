@@ -2,6 +2,7 @@
 const rewire = require('rewire');
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const v = require('../updater.js');
 // Pull in the debug log with rewire.
 const log = rewire('../log');
 // Setup a debug message class.
@@ -527,4 +528,15 @@ describe('Debug Logging Utility', () => {
     });
   });
 });
-
+describe('Testing manual update', () => {
+  it('Should return a string', () => {
+    v.update.updateManual('1.0.0', 'test');
+    expect('1.0.0');
+  });
+});
+describe('Testing Auto update', () => {
+  it('Should return a string', () => {
+    v.update.updateAuto('test');
+    expect('1.0.4');
+  });
+});
