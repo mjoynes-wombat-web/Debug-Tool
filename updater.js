@@ -1,6 +1,13 @@
 const fs = require('fs');
 
 class versionUpdate {
+  updatePackage(ver) {
+    this.oldPackage = JSON.parse(fs.readFileSync('package.json'));
+    this.version = ver;
+    this.oldPackage.version = this.version;
+    this.newPackage = this.oldPackage;
+    console.log(this.newPackage);
+  }
   updateManual(ver, rel) {
     this.current = ver.split('.');
     this.oldPackage = JSON.parse(fs.readFileSync('package.json'));
@@ -29,7 +36,6 @@ class versionUpdate {
   }
   updateAuto(rel) {
     this.oldPackage = JSON.parse(fs.readFileSync('package.json'));
-    console.log(this.oldPackage.version)
     this.current = this.oldPackage.version.split('.');
     this.n = '';
     switch (rel) {
@@ -52,12 +58,11 @@ class versionUpdate {
       default:
         return 'Invalid release type.';
     }
+    const update = new versionUpdate();
+    update.updatePackage(this.updateVersion);
     return this.updateVersion;
   }
-  updatePackage(ver) {
-    this.oldPackage = JSON.parse(fs.readFileSync('package.json'));
-    this.version = ver;
-  }
 }
-const versionUpdater = new versionUpdate();
-console.log(versionUpdater.updateAuto('test'));
+const test = new versionUpdate();
+test.updateAuto('test');
+exports.versionUpdate = new versionUpdate();
