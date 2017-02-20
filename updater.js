@@ -6,7 +6,14 @@ class versionUpdate {
     this.version = ver;
     this.oldPackage.version = this.version;
     this.newPackage = this.oldPackage;
-    console.log(this.newPackage);
+    this.package = JSON.stringify(this.newPackage, null, 2);
+    this.status = 'package.json updated.';
+    fs.writeFile('package2.json', this.package, (err) => {
+      if (err) {
+        this.status = err;
+      }
+    });
+    return this.status;
   }
   updateManual(ver, rel) {
     this.current = ver.split('.');
@@ -57,10 +64,10 @@ class versionUpdate {
         return 'Invalid release type.';
     }
     const update = new versionUpdate();
-    update.updatePackage(this.updateVersion);
-    return this.updateVersion;
+    const status = update.updatePackage(this.updateVersion);
+    return status;
   }
 }
 const test = new versionUpdate();
-test.updateAuto('test');
+console.log(test.updateManual('1.0.0', 'test'));
 exports.versionUpdate = new versionUpdate();
