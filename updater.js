@@ -26,7 +26,6 @@ class versionUpdate {
         this.updateVersion = `${this.n}.0.0`;
         break;
       case 'test':
-        this.n = parseInt(this.current[0], 10) + 1;
         this.updateVersion = `${this.current[0]}.${this.current[1]}.${this.current[2]}`;
         break;
       default:
@@ -52,7 +51,6 @@ class versionUpdate {
         this.updateVersion = `${this.n}.0.0`;
         break;
       case 'test':
-        this.n = parseInt(this.current[0], 10) + 1;
         this.updateVersion = `${this.current[0]}.${this.current[1]}.${this.current[2]}`;
         break;
       default:
