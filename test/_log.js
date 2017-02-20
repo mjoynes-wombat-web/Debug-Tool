@@ -1,7 +1,4 @@
 // Pull in the requirements.
-const rewire = require('rewire');
-const expect = require('chai').expect;
-const sinon = require('sinon');
 const log = require('../log.js');
 
 // Setup a debug message class.
