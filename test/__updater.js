@@ -7,3 +7,9 @@ describe('Testing manual update', () => {
     expect('1.0.0');
   });
 });
+describe('Testing Auto update', () => {
+  it('Should return a string', () => {
+    v.update.updateAuto('test');
+    expect('1.0.4');
+  });
+});
