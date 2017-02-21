@@ -54,7 +54,7 @@ class versionUpdate {
         // set n to minor + 1
         this.n = parseInt(this.current[1], 10) + 1;
         // set the new version number
-        this.updateVersion = `${this.current[0]}.${this.n}.${this.current[2]}`;
+        this.updateVersion = `${this.current[0]}.${this.n}.0`;
         break;
       // if major
       case 'major':
@@ -94,7 +94,7 @@ class versionUpdate {
       // if minor update minor and set new version number
       case 'minor':
         this.n = parseInt(this.current[1], 10) + 1;
-        this.updateVersion = `${this.current[0]}.${this.n}.${this.current[2]}`;
+        this.updateVersion = `${this.current[0]}.${this.n}.0`;
         break;
       // if major update major set minor&patch to 0 update version number
       case 'major':
