@@ -63,25 +63,41 @@ module.exports.debug = (info) => { // Export to Express.
 
     const consoleMsg = styleConsoleMsg(time, msg); // Pass in the time and message to be styled.
     const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`; // Format the spacing for the message.
-
+    // msg out determines which console to use
+    const msgOut = (conMsg) => {
+      switch (conMsg.level) {
+        case 'debug':
+          console.log(consoleOutput);
+          break;
+        case 'ERROR':
+          console.error(consoleOutput);
+          break;
+        case 'INFO':
+          console.warn(consoleOutput);
+          break;
+        default:
+          console.log(consoleOutput);
+          break;
+      }
+    };
     switch (process.env.DEBUG) { // Check the debug environment variable.
       case 'debug':
       case 'true': // If it is true or debug the output all messages to the console.
-        console.log(consoleOutput);
+        msgOut(consoleMsg);
         break;
       case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
-          console.error(consoleOutput);
+          msgOut(consoleMsg);
+          break;
         }
         break;
       case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
-          console.warn(consoleOutput);
+          msgOut(consoleMsg);
+          break;
         }
         break;
       default:
-        // If the level is not set to one of the values above then output the incorrect value
-        // message.
         console.log(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
         break;
     }
