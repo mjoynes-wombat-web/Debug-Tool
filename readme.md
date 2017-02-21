@@ -1,6 +1,6 @@
 # Node and Express Debug Logger - Version 1
 ##[ ![Codeship Status for DPCobb/Debug-Tool](https://app.codeship.com/projects/13161fd0-d9d6-0134-21e1-72ea577329ac/status?branch=log-enhance)](https://app.codeship.com/projects/203515)
-This debug logger is for node and express. It formats the log file and console output for easy readability.
+This debug logger is for node and express. It formats the console output for easy readability.
 <br>
 <br>
 # Installation
