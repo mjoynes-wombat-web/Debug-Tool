@@ -63,11 +63,6 @@ class versionUpdate {
         // set the new version
         this.updateVersion = `${this.n}.0.0`;
         break;
-      // if test
-      case 'test':
-        // return the given current version
-        this.updateVersion = `${this.current[0]}.${this.current[1]}.${this.current[2]}`;
-        break;
       // if none of the above
       default:
         // return invalid
@@ -100,10 +95,6 @@ class versionUpdate {
       case 'major':
         this.n = parseInt(this.current[0], 10) + 1;
         this.updateVersion = `${this.n}.0.0`;
-        break;
-      // if test set to current version
-      case 'test':
-        this.updateVersion = `${this.current[0]}.${this.current[1]}.${this.current[2]}`;
         break;
       // if none of the above invalid release type
       default:

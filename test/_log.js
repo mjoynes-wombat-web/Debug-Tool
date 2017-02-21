@@ -542,6 +542,10 @@ describe('Testing manual update', () => {
     const update = v.update.updateManual('1.0.0', 'major');
     expect(update).to.equal('2.0.0');
   });
+  it('Should return an invalid release', () => {
+    const update = v.update.updateManual('1.0.0', 'invalid');
+    expect(update).to.equal('Invalid release type.');
+  });
 });
 describe('Testing Auto update', () => {
   beforeEach(() => {
@@ -562,6 +566,10 @@ describe('Testing Auto update', () => {
     it('Should return a success string', () => {
       const update = v.update.updateAuto('major');
       expect(update).to.equal('package.json updated.');
+    });
+    it('Should return an invalid release', () => {
+      const update = v.update.updateAuto('invalid');
+      expect(update).to.equal('Invalid release type.');
     });
   });
 });
