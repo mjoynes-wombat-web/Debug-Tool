@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const v = require('../updater.js');
 // Pull in the debug log with rewire.
 const log = rewire('../log');
+const ver = rewire('../updater');
 // Setup a debug message class.
 class debugMsg {
   constructor(object) {
@@ -529,14 +530,38 @@ describe('Debug Logging Utility', () => {
   });
 });
 describe('Testing manual update', () => {
-  it('Should return a string', () => {
-    v.update.updateManual('1.0.0', 'test');
-    expect('1.0.0');
+  it('Should return a patch update', () => {
+    const update = v.update.updateManual('1.0.0', 'patch');
+    expect(update).to.equal('1.0.1');
+  });
+  it('Should return a minor update', () => {
+    const update = v.update.updateManual('1.0.0', 'minor');
+    expect(update).to.equal('1.1.0');
+  });
+  it('Should return a major update', () => {
+    const update = v.update.updateManual('1.0.0', 'major');
+    expect(update).to.equal('2.0.0');
   });
 });
 describe('Testing Auto update', () => {
-  it('Should return a string', () => {
-    v.update.updateAuto('test');
-    expect('package.json updated');
+  beforeEach(() => {
+    this.fs = {
+      writeFile: sinon.spy(),
+    };
+    ver.__set__('fs.writeFile', this.fs.writeFile);
+  });
+  describe('Testing update types', () => {
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('patch');
+      expect(update).to.equal('package.json updated.');
+    });
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('minor');
+      expect(update).to.equal('package.json updated.');
+    });
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('major');
+      expect(update).to.equal('package.json updated.');
+    });
   });
 });
