@@ -45,7 +45,6 @@ const log = rewire('../log');
       });
       it('Log All Level Messages to the Console.', () => {
         const t = this; // Variable to persist this.
-        // Expect the console, fs.stat and fs.appendFile to be run on all 3 messages.
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
