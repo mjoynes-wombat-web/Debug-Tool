@@ -82,17 +82,17 @@ module.exports.debug = (info) => { // Export to Express.
     switch (process.env.DEBUG) { // Check the debug environment variable.
       case 'debug':
       case 'true': // If it is true or debug the output all messages to the console.
-        msgOut(consoleMsg, info.level);
+        msgOut(consoleOutput, info.level);
         break;
       case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
-          msgOut(consoleMsg, info.level);
+          msgOut(consoleOutput, info.level);
           break;
         }
         break;
       case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
-          msgOut(consoleMsg, info.level);
+          msgOut(consoleOutput, info.level);
           break;
         }
         break;
