@@ -42,7 +42,6 @@ module.exports.debug = (info) => { // Export to Express.
       } else { // Otherwise just style the url.
         consoleMsg.url = chalk.underline.blue(consoleMsg.url);
       }
-
       switch (consoleMsg.level) { // Check the level and style it accordingly.
         case 'INFO':
           consoleMsg.level = chalk.green(` ${consoleMsg.level} `);
@@ -76,7 +75,7 @@ module.exports.debug = (info) => { // Export to Express.
           console.log(conMsg);
           break;
         default:
-          console.error(conMsg);
+          console.error(`The message level ${level} is not valid.`);
           break;
       }
     };
@@ -98,7 +97,7 @@ module.exports.debug = (info) => { // Export to Express.
         }
         break;
       default:
-        msgOut(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
+        msgOut(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`, 'ERROR');
         break;
     }
   }
