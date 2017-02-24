@@ -1,12 +1,11 @@
 # Node and Express Debug Logger - Version 1
-This debug logger is for node and express. It formats the log file and console output for easy readability. 
+##[ ![Codeship Status for DPCobb/Debug-Tool](https://app.codeship.com/projects/13161fd0-d9d6-0134-21e1-72ea577329ac/status?branch=log-enhance)](https://app.codeship.com/projects/203515)
+This debug logger is for node and express. It formats the console output for easy readability.
 <br>
 <br>
 # Installation
 
 Install by running `npm install debug-tool-express --save-dev`. You will then need to require it into your project.
-
-You will also need to add a `logs` folder to your root directory.
 
 ### Dependencies
 ```
@@ -18,7 +17,7 @@ You will also need to add a `logs` folder to your root directory.
 #Using The Debugger
 
 ## Adding Debug Messages.
-To add a debug message to your code pass the `.debug` method an object. The following values can be defined but all are optional. This will added them to the `error.log` file in this modules `logs` folder.
+To add a debug message to your code pass the `.debug` method an object. The following values can be defined but all are optional.
 
 ```
 {
@@ -30,7 +29,7 @@ To add a debug message to your code pass the `.debug` method an object. The foll
 }
   ```
 ## Activating Console Messages.
-The debugging logger messages for this application have 3 levels. They are error, info, and debug. 
+The debugging logger messages for this application have 3 levels. They are error, info, and debug.
 
 Set the `DEBUG=opt` to one of the `opt` below. This will output specific level messages to the console.
 
