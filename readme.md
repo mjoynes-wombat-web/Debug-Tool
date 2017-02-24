@@ -1,7 +1,7 @@
-# Node and Express Debug Logger - Version 1
+# Node and Express Utility Tool - Version 1.1.3
 
 ##[ ![Codeship Status for DPCobb/Debug-Tool](https://app.codeship.com/projects/13161fd0-d9d6-0134-21e1-72ea577329ac/status?branch=master)](https://app.codeship.com/projects/203515)
-This debug logger is for node and express. It formats the console output for easy readability.
+This utility is for node and express. It formats the console output for easy readability and provides a node package.json version incrementor.
 
 <br>
 <br>
@@ -19,7 +19,7 @@ Install by running `npm install debug-tool-express --save-dev`. You will then ne
 #Using The Debugger
 
 ## Adding Debug Messages.
-To add a debug message to your code pass the `.debug` method an object. The following values can be defined but all are optional.
+To add a debug message to your code pass the `.debug` method an object. The following values can be defined but all are optional. There are three message levels. They are `ERROR`, `INFO` and `DEBUG`.
 
 ```
 {
@@ -27,7 +27,7 @@ To add a debug message to your code pass the `.debug` method an object. The foll
   method = ''
   url = ''
   ip = ''
-  level = ''
+  level = 'Selected one of the levels above.'
 }
   ```
 ## Activating Console Messages.
@@ -41,14 +41,6 @@ true | Outputs all debug messages.
 debug | Outputs all debug messages.
 info | Outputs the info, and error debug messages.
 error | Outputs the error debug messages.
-
-##Unit Testing
-To unit test the debugger run `mocha` in the packages main directory.
-<br>
-<br>
-# Code Styling
-## AirBnb JavaScript
-This projected follows the AirBnb Javascript styling conventions. Their documentation can be found at [https://github.com/airbnb/javascript](https://github.com/airbnb/javascript "AirBnb JavaScript Style Guide").
 <br>
 <br>
 # Version Updater
@@ -86,3 +78,12 @@ When adding features to the URL Shorter the feature branch workflow should be us
 * `git merge master` - Merge any changes from the master.
 * Commit and push any changes if necessary.
 * Create a pull request for your feature into the master branch. Codeship must get a green build before this is allowed.
+<br>
+<br>
+##Unit Testing
+To unit test the debugger run `mocha` in the packages main directory.
+<br>
+<br>
+# Code Styling
+## AirBnb JavaScript
+This projected follows the AirBnb Javascript styling conventions. Their documentation can be found at [https://github.com/airbnb/javascript](https://github.com/airbnb/javascript "AirBnb JavaScript Style Guide").
