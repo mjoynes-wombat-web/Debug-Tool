@@ -1,10 +1,5 @@
 require('dotenv').config(); // Require dotenv.
 
-const fs = {
-  stat: require('fs').stat,
-  appendFile: require('fs').appendFile,
-};
-
 const chalk = require('chalk'); // Require chalk.
 
 const time = new Date().toISOString(); // Get current date and time in ISO format.
@@ -36,49 +31,6 @@ module.exports.debug = (info) => { // Export to Express.
     }
   });
 
-  const errorLog = './logs/error.log'; // Error log location.
-  let debugLogMsg; // Variable to hold the formatted error log message.
-
-  if (msg.url === '') { // If the URL is empty.
-    if (msg.ip.length < 10) { // If the ip is less than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    } else { // Otherwise if the ip is longer than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    }
-  } else if (msg.url.length < 16) { // Otherwise if the URL is less than 16 characters.
-    if (msg.ip.length < 10) { // If the ip is less than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    } else { // Otherwise if the ip is longer than 10 characters, format the message this way.
-      debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t\t${msg.level}\t${msg.logMsg}`;
-    }
-    // Otherwise if the IP is less than 10 characters, format the message this way.
-  } else if (msg.ip.length < 10) {
-    debugLogMsg = `${time}\t${msg.ip}\t\t${msg.method}\t${msg.url}\t${msg.level}\t${msg.logMsg}`;
-  } else { // Otherwise format the message this way.
-    debugLogMsg = `${time}\t${msg.ip}\t${msg.method}\t${msg.url}\t${msg.level}\t${msg.logMsg}`;
-  }
-
-  // Check to see if there is an error when checking the status of the error log.
-  fs.stat(errorLog, (err) => {
-    if (err) { // If there is an error
-      if (err.code === 'ENOENT') { // If the error is a non existent file, write the headers to the log.
-        fs.appendFile(errorLog, 'TIME\t\tIP\t\tMETHOD\tURL\t\tLEVEL\tMESSAGE\n', (writeErr) => { // Throw an error if there is a write error.
-          if (writeErr) throw writeErr;
-          else return true;
-        });
-        return true;
-      }
-      return err.code;
-    }
-    return false;
-  });
-
-  // Write the message to the log.
-  fs.appendFile(errorLog, `${debugLogMsg}\n`, (writeErr) => { // Throw an error if there is a write error.
-    if (writeErr) throw writeErr;
-    return true;
-  });
-
   if (process.env.DEBUG) { // If there  DEBUG is in the env variables.
     // Style Console Message Function.
     const styleConsoleMsg = (t, m) => {
@@ -90,7 +42,6 @@ module.exports.debug = (info) => { // Export to Express.
       } else { // Otherwise just style the url.
         consoleMsg.url = chalk.underline.blue(consoleMsg.url);
       }
-
       switch (consoleMsg.level) { // Check the level and style it accordingly.
         case 'INFO':
           consoleMsg.level = chalk.green(` ${consoleMsg.level} `);
@@ -111,26 +62,42 @@ module.exports.debug = (info) => { // Export to Express.
 
     const consoleMsg = styleConsoleMsg(time, msg); // Pass in the time and message to be styled.
     const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`; // Format the spacing for the message.
-
+    // msg out determines which console to use
+    const msgOut = (conMsg, level) => {
+      switch (level) {
+        case 'DEBUG':
+          console.warn(conMsg);
+          break;
+        case 'ERROR':
+          console.error(conMsg);
+          break;
+        case 'INFO':
+          console.log(conMsg);
+          break;
+        default:
+          console.error(`The message level ${level} is not valid.`);
+          break;
+      }
+    };
     switch (process.env.DEBUG) { // Check the debug environment variable.
       case 'debug':
       case 'true': // If it is true or debug the output all messages to the console.
-        console.log(consoleOutput);
+        msgOut(consoleMsg, info.level);
         break;
       case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
-          console.log(consoleOutput);
+          msgOut(consoleMsg, info.level);
+          break;
         }
         break;
       case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
-          console.log(consoleOutput);
+          msgOut(consoleMsg, info.level);
+          break;
         }
         break;
       default:
-        // If the level is not set to one of the values above then output the incorrect value
-        // message.
-        console.log(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
+        msgOut(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`, 'ERROR');
         break;
     }
   }
