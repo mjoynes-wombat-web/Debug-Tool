@@ -33,6 +33,8 @@ const log = rewire('../log');
       };
       this.console = {
         log: sinon.spy(),
+        warn: sinon.spy(),
+        error: sinon.spy(),
       };
       log.__set__('console', this.console);
     });
@@ -48,7 +50,9 @@ const log = rewire('../log');
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
-        expect(t.console.log.callCount).to.equal(3);
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.console.warn.callCount).to.equal(1);
+        expect(t.console.error.callCount).to.equal(1);
       });
     });
     // Tests for log level set to debug.
@@ -62,7 +66,9 @@ const log = rewire('../log');
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
-        expect(t.console.log.callCount).to.equal(3);
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.console.warn.callCount).to.equal(1);
+        expect(t.console.error.callCount).to.equal(1);
       });
     });
     // Tests for log level set to info.
@@ -77,7 +83,8 @@ const log = rewire('../log');
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
-        expect(t.console.log.callCount).to.equal(2);
+        expect(t.console.log.callCount).to.equal(1);
+        expect(t.console.error.callCount).to.equal(1);
       });
     });
     // Tests for log level set to error.
@@ -92,7 +99,7 @@ const log = rewire('../log');
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
-        expect(t.console.log.callCount).to.equal(1);
+        expect(t.console.error.callCount).to.equal(1);
       });
     });
     // Tests for log level set to an invalid option.
@@ -107,7 +114,7 @@ const log = rewire('../log');
         log.debug(t.logLvlMessages.info); // Send a test info level message.
         log.debug(t.logLvlMessages.debug);  // Send a test debug level message.
         log.debug(t.logLvlMessages.error);  // Send a test error level message.
-        expect(t.console.log.callCount).to.equal(3);
+        expect(t.console.error.callCount).to.equal(3);
         // Make sure that the message each time matches the debug level invalid message.
         t.console.log.args.forEach((args) => {
           expect(args[0].substring(args[0].indexOf('\t') + 1)).to.equal('The debug level invalid is incorrect. Please choose true, error, debug or info.');
