@@ -42,7 +42,6 @@ module.exports.debug = (info) => { // Export to Express.
       } else { // Otherwise just style the url.
         consoleMsg.url = chalk.underline.blue(consoleMsg.url);
       }
-
       switch (consoleMsg.level) { // Check the level and style it accordingly.
         case 'INFO':
           consoleMsg.level = chalk.green(` ${consoleMsg.level} `);
@@ -64,41 +63,41 @@ module.exports.debug = (info) => { // Export to Express.
     const consoleMsg = styleConsoleMsg(time, msg); // Pass in the time and message to be styled.
     const consoleOutput = `${time}\t${consoleMsg.ip}\t${consoleMsg.method}${consoleMsg.url}\t${consoleMsg.level}\t${consoleMsg.logMsg}`; // Format the spacing for the message.
     // msg out determines which console to use
-    const msgOut = (conMsg) => {
-      switch (conMsg.level) {
-        case 'debug':
-          console.log(consoleOutput);
+    const msgOut = (conMsg, level) => {
+      switch (level) {
+        case 'DEBUG':
+          console.warn(conMsg);
           break;
         case 'ERROR':
-          console.error(consoleOutput);
+          console.error(conMsg);
           break;
         case 'INFO':
-          console.warn(consoleOutput);
+          console.log(conMsg);
           break;
         default:
-          console.log(consoleOutput);
+          console.error(`The message level ${level} is not valid.`);
           break;
       }
     };
     switch (process.env.DEBUG) { // Check the debug environment variable.
       case 'debug':
       case 'true': // If it is true or debug the output all messages to the console.
-        msgOut(consoleMsg);
+        msgOut(consoleMsg, info.level);
         break;
       case 'error': // If it is set to error then only output the error level messages.
         if (info.level === 'ERROR') {
-          msgOut(consoleMsg);
+          msgOut(consoleMsg, info.level);
           break;
         }
         break;
       case 'info': // If it is set to info the only output the error and info level messages.
         if (info.level === 'INFO' || info.level === 'ERROR') {
-          msgOut(consoleMsg);
+          msgOut(consoleMsg, info.level);
           break;
         }
         break;
       default:
-        console.log(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
+        msgOut(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`, 'ERROR');
         break;
     }
   }
