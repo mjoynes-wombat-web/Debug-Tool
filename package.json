@@ -1,8 +1,8 @@
 {
   "name": "debug-tool-express",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "description": "A utility for debugging node.JS express web applications.",
-  "main": "log.js",
+  "main": "util.js",
   "directories": {
     "test": "test",
     "logs": "logs"
