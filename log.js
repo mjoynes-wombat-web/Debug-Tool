@@ -67,16 +67,16 @@ module.exports.debug = (info) => { // Export to Express.
     const msgOut = (conMsg, level) => {
       switch (level) {
         case 'DEBUG':
-          console.warn(consoleOutput);
+          console.warn(conMsg);
           break;
         case 'ERROR':
-          console.error(consoleOutput);
+          console.error(conMsg);
           break;
         case 'INFO':
-          console.log(consoleOutput);
+          console.log(conMsg);
           break;
         default:
-          console.log(consoleOutput);
+          console.error(conMsg);
           break;
       }
     };
@@ -98,7 +98,7 @@ module.exports.debug = (info) => { // Export to Express.
         }
         break;
       default:
-        console.error(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
+        msgOut(`The debug level ${process.env.DEBUG} is incorrect. Please choose true, error, debug or info.`);
         break;
     }
   }
