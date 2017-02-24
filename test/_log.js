@@ -1,11 +1,56 @@
 const rewire = require('rewire');
 const expect = require('chai').expect;
 const sinon = require('sinon');
-
+const v = require('../updater.js');
+// Pull in the debug log with rewire.
 const log = rewire('../log');
+const ver = rewire('../updater');
+// Setup a debug message class.
+class debugMsg {
+  constructor(object) {
+    this.logMsg = object.logMsg; // Message to log.
+    this.method = object.method; // Access method.
+    this.url = object.url; // Accessed URL.
+    this.ip = object.ip; // Access by IP.
+    this.level = object.level; // Message level.
+  }
+}
+// Compare Log Message Function.
+// Accepts the sent messages, the expected messages and the format function.
+function compareLogMsg(sent, expected, format) {
+  const logStrings = [];  // An array to hold the log strings minus the time.
+  // For each log string pull out the substring without the time and add it to the log strings
+  // array.
+  sent.forEach((args) => {
+    logStrings.push(args[1].substring(args[1].indexOf('\t') + 1));
+  });
+  // For each messages that is expected.
+  Object.keys(expected).forEach((key, index) => {
+    // Create a new message object from the debug message class.
+    const expectedMsg = new debugMsg(expected[key]);
+    // For each key in the expected message.
+    Object.keys(expectedMsg).forEach((k) => {
+      // If it is undefined set it to an empty string.
+      if (expectedMsg[k] === undefined) {
+        expectedMsg[k] = '';
+      }
+    });
+    // Format the message with the format function provided.
+    const msg = format(expectedMsg);
+    // Pull in the results message based on the index we are on.
+    const resultMsg = logStrings[index];
+    // Expect the two messages to match.
+    expect(msg).to.equal(resultMsg);
+  });
+}
+// Debug Logging Utility Tests.
+describe('Debug Logging Utility', () => {
+  // Before each test.
+
 // Test Log Levels.
 describe('TESTING LOG LEVELS', () => {
   // Before Each Test/
+
   beforeEach(() => {
     // Log level message objects for testing.
     this.logLvlMessages = {
@@ -166,3 +211,48 @@ describe('TESTING LOG LEVELS', () => {
     });
   });
 });
+describe('Testing manual update', () => {
+  it('Should return a patch update', () => {
+    const update = v.update.updateManual('1.0.0', 'patch');
+    expect(update).to.equal('1.0.1');
+  });
+  it('Should return a minor update', () => {
+    const update = v.update.updateManual('1.0.0', 'minor');
+    expect(update).to.equal('1.1.0');
+  });
+  it('Should return a major update', () => {
+    const update = v.update.updateManual('1.0.0', 'major');
+    expect(update).to.equal('2.0.0');
+  });
+  it('Should return an invalid release', () => {
+    const update = v.update.updateManual('1.0.0', 'invalid');
+    expect(update).to.equal('Invalid release type.');
+  });
+});
+describe('Testing Auto update', () => {
+  beforeEach(() => {
+    this.fs = {
+      writeFile: sinon.spy(),
+    };
+    ver.__set__('fs.writeFile', this.fs.writeFile);
+  });
+  describe('Testing update types', () => {
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('patch');
+      expect(update).to.equal('package.json updated.');
+    });
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('minor');
+      expect(update).to.equal('package.json updated.');
+    });
+    it('Should return a success string', () => {
+      const update = v.update.updateAuto('major');
+      expect(update).to.equal('package.json updated.');
+    });
+    it('Should return an invalid release', () => {
+      const update = v.update.updateAuto('invalid');
+      expect(update).to.equal('Invalid release type.');
+    });
+  });
+});
+
