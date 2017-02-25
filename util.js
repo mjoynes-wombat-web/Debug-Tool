@@ -212,4 +212,4 @@ class versionUpdate {
   }
 }
 
-exports.update = new versionUpdate();
+exports.updateVer = new versionUpdate();
